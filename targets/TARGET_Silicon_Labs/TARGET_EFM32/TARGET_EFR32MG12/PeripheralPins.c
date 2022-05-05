@@ -752,3 +752,163 @@ MBED_WEAK const PinMap PinMap_UART_RX[] = {
 #endif
     {NC  , NC   , NC}
 };
+
+MBED_WEAK const PinMap PinMap_UART_CTS[] = {
+#ifdef USART0_BASE
+    /* USART0 */
+    {PA0,  USART_0, 28},
+    {PA1,  USART_0, 29},
+    {PA2,  USART_0, 30},
+    {PA3,  USART_0, 31},
+    {PA4,  USART_0,  0},
+    {PA5,  USART_0,  1},
+    {PB11, USART_0,  2},
+    {PB12, USART_0,  3},
+    {PB13, USART_0,  4},
+    {PB14, USART_0,  5},
+    {PB15, USART_0,  6},
+    {PD9,  USART_0, 13},
+    {PD10, USART_0, 14},
+    {PD11, USART_0, 15},
+    {PD12, USART_0, 16},
+    {PD13, USART_0, 17},
+    {PD14, USART_0, 18},
+    {PD15, USART_0, 19},
+#endif
+#ifdef USART1_BASE
+    /* USART1 */
+    {PC6,  USART_1,  7},
+    {PC7,  USART_1,  8},
+    {PC8,  USART_1,  9},
+    {PC9,  USART_1, 10},
+    {PC10, USART_1, 11},
+    {PC11, USART_1, 12},
+    {PF0,  USART_1, 20},
+    {PF1,  USART_1, 21},
+    {PF2,  USART_1, 22},
+    {PF3,  USART_1, 23},
+    {PF4,  USART_1, 24},
+    {PF5,  USART_1, 25},
+    {PF6,  USART_1, 26},
+    {PF7,  USART_1, 27},
+#endif
+#ifdef USART2_BASE
+    /* USART2 */
+    {PA6,  USART_2, 29},
+    {PA7,  USART_2, 30},
+    {PA8,  USART_2, 31},
+    {PA9,  USART_2,  0},
+    {PI0,  USART_2,  1},
+    {PI1,  USART_2,  2},
+    {PI2,  USART_2,  3},
+    {PI3,  USART_2,  4},
+    {PB6,  USART_2,  5},
+    {PB7,  USART_2,  6},
+    {PB8,  USART_2,  7},
+    {PB9,  USART_2,  8},
+    {PB10, USART_2,  9},
+    {PF8,  USART_2, 17},
+    {PF9,  USART_2, 18},
+    {PF10, USART_2, 19},
+    {PF11, USART_2, 20},
+    {PF12, USART_2, 21},
+    {PF13, USART_2, 22},
+    {PF14, USART_2, 23},
+    {PF15, USART_2, 24},
+    {PK0,  USART_2, 25},
+    {PK1,  USART_2, 26},
+    {PK2,  USART_2, 27},
+#endif
+#ifdef USART3_BASE
+    /* USART3 */
+    {PJ14, USART_3, 12},
+    {PJ15, USART_3, 13},
+    {PC0,  USART_3, 14},
+    {PC1,  USART_3, 15},
+    {PC2,  USART_3, 16},
+    {PC3,  USART_3, 17},
+    {PC4,  USART_3, 18},
+    {PC5,  USART_3, 19},
+#endif
+    {NC  , NC   , NC}
+};
+
+MBED_WEAK const PinMap PinMap_UART_RTS[] = {
+#ifdef USART0_BASE
+    /* USART0 */
+    {PA0,  USART_0, 27},
+    {PA1,  USART_0, 28},
+    {PA2,  USART_0, 29},
+    {PA3,  USART_0, 30},
+    {PA4,  USART_0, 31},
+    {PA5,  USART_0,  0},
+    {PB11, USART_0,  1},
+    {PB12, USART_0,  2},
+    {PB13, USART_0,  3},
+    {PB14, USART_0,  4},
+    {PB15, USART_0,  5},
+    {PD9,  USART_0, 12},
+    {PD10, USART_0, 13},
+    {PD11, USART_0, 14},
+    {PD12, USART_0, 15},
+    {PD13, USART_0, 16},
+    {PD14, USART_0, 17},
+    {PD15, USART_0, 18},
+#endif
+#ifdef USART1_BASE
+    /* USART1 */
+    {PC6,  USART_1,  6},
+    {PC7,  USART_1,  7},
+    {PC8,  USART_1,  8},
+    {PC9,  USART_1,  9},
+    {PC10, USART_1, 10},
+    {PC11, USART_1, 11},
+    {PF0,  USART_1, 19},
+    {PF1,  USART_1, 20},
+    {PF2,  USART_1, 21},
+    {PF3,  USART_1, 22},
+    {PF4,  USART_1, 23},
+    {PF5,  USART_1, 24},
+    {PF6,  USART_1, 25},
+    {PF7,  USART_1, 26},
+#endif
+#ifdef USART2_BASE
+    /* USART2 */
+    {PA6,  USART_2, 28},
+    {PA7,  USART_2, 29},
+    {PA8,  USART_2, 30},
+    {PA9,  USART_2, 31},
+    {PI0,  USART_2,  0},
+    {PI1,  USART_2,  1},
+    {PI2,  USART_2,  2},
+    {PI3,  USART_2,  3},
+    {PB6,  USART_2,  4},
+    {PB7,  USART_2,  5},
+    {PB8,  USART_2,  6},
+    {PB9,  USART_2,  7},
+    {PB10, USART_2,  8},
+    {PF8,  USART_2, 16},
+    {PF9,  USART_2, 17},
+    {PF10, USART_2, 18},
+    {PF11, USART_2, 19},
+    {PF12, USART_2, 20},
+    {PF13, USART_2, 21},
+    {PF14, USART_2, 22},
+    {PF15, USART_2, 23},
+    {PK0,  USART_2, 24},
+    {PK1,  USART_2, 25},
+    {PK2,  USART_2, 26},
+#endif
+#ifdef USART3_BASE
+    /* USART3 */
+    {PJ14, USART_3, 11},
+    {PJ15, USART_3, 12},
+    {PC0,  USART_3, 13},
+    {PC1,  USART_3, 14},
+    {PC2,  USART_3, 15},
+    {PC3,  USART_3, 16},
+    {PC4,  USART_3, 17},
+    {PC5,  USART_3, 18},
+#endif
+    {NC  , NC   , NC}
+};
