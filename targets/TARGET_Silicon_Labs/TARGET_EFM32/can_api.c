@@ -59,8 +59,8 @@ void can_init_freq(can_t *obj, PinName rd, PinName td, int hz)
 #endif
     }
 
-    MBED_ASSERT((unsigned int)rd != NC);
-    MBED_ASSERT((unsigned int)td != NC);
+    MBED_ASSERT((int)rd != NC);
+    MBED_ASSERT((int)td != NC);
 
 
     // Configure CAN pins

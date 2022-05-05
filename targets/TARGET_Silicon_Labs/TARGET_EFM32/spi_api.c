@@ -146,7 +146,7 @@ void spi_preinit(spi_t *obj, PinName mosi, PinName miso, PinName clk, PinName cs
     SPIName spi_ctrl = (SPIName) pinmap_merge(spi_clk, spi_cs);
 
     obj->spi.spi = (USART_TypeDef *) pinmap_merge(spi_data, spi_ctrl);
-    MBED_ASSERT((unsigned int) obj->spi.spi != NC);
+    MBED_ASSERT((int)obj->spi.spi != NC);
 
     if (cs != NC) { /* Slave mode */
         obj->spi.master = false;
