@@ -61,6 +61,10 @@ extern const PinMap PinMap_SPI_CS[];
 extern const PinMap PinMap_UART_TX[];
 extern const PinMap PinMap_UART_RX[];
 #endif
+#if DEVICE_SERIAL_FC
+extern const PinMap PinMap_UART_CTS[];
+extern const PinMap PinMap_UART_RTS[];
+#endif
 
 #if DEVICE_CAN
 /************CAN***************/
