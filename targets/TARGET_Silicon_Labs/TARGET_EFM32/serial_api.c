@@ -1053,7 +1053,7 @@ void serial_irq_set(serial_t *obj, SerialIrq irq, uint32_t enable)
                 NVIC_EnableIRQ(serial_get_rx_irq_index(obj));
             } else { /* TX */
                 obj->serial.periph.leuart->IEN |= LEUART_IEN_TXC;
-                NVIC_ClearPendingIRQ(serial_get_tx_irq_index(obj));
+                NVIC_SetPendingIRQ(serial_get_tx_irq_index(obj));
                 NVIC_SetPriority(serial_get_tx_irq_index(obj), 1);
                 NVIC_EnableIRQ(serial_get_tx_irq_index(obj));
             }
@@ -1075,7 +1075,7 @@ void serial_irq_set(serial_t *obj, SerialIrq irq, uint32_t enable)
                 NVIC_EnableIRQ(serial_get_rx_irq_index(obj));
             } else { /* TX */
                 obj->serial.periph.uart->IEN |= USART_IEN_TXC;
-                NVIC_ClearPendingIRQ(serial_get_tx_irq_index(obj));
+                NVIC_SetPendingIRQ(serial_get_tx_irq_index(obj));
                 NVIC_SetPriority(serial_get_tx_irq_index(obj), 1);
                 NVIC_EnableIRQ(serial_get_tx_irq_index(obj));
             }
