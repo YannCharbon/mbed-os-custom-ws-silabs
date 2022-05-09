@@ -409,7 +409,7 @@ static inline IRQn_Type serial_get_tx_irq_index(serial_t *obj)
 * @param obj pointer to serial object
 * @return CMU_Clock_TypeDef for U(S)ART
 */
-inline CMU_Clock_TypeDef serial_get_clock(serial_t *obj)
+static inline CMU_Clock_TypeDef serial_get_clock(serial_t *obj)
 {
     switch ((uint32_t)obj->serial.periph.uart) {
 #ifdef UART0
@@ -457,7 +457,7 @@ inline CMU_Clock_TypeDef serial_get_clock(serial_t *obj)
     }
 }
 
-void serial_preinit(serial_t *obj, PinName tx, PinName rx)
+static void serial_preinit(serial_t *obj, PinName tx, PinName rx)
 {
     /* Get UART object connected to the given pins */
     UARTName uart_tx = (UARTName) pinmap_peripheral(tx, PinMap_UART_TX);
@@ -904,114 +904,6 @@ void serial_format(serial_t *obj, int data_bits, SerialParity parity, int stop_b
             obj->serial.periph.uart->IFC = USART_IFC_TXC;
             obj->serial.periph.uart->IEN = enabled_interrupts;
         }
-    }
-}
-
-/******************************************************************************
- *                               INTERRUPTS                                   *
- ******************************************************************************/
-uint8_t serial_tx_ready(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        return (obj->serial.periph.leuart->STATUS & LEUART_STATUS_TXBL) ? true : false;
-    } else {
-        return (obj->serial.periph.uart->STATUS & USART_STATUS_TXBL) ? true : false;
-    }
-}
-
-uint8_t serial_rx_ready(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        return (obj->serial.periph.leuart->STATUS & LEUART_STATUS_RXDATAV) ? true : false;
-    } else {
-        return (obj->serial.periph.uart->STATUS & USART_STATUS_RXDATAV) ? true : false;
-    }
-}
-
-void serial_write_asynch(serial_t *obj, int data)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        obj->serial.periph.leuart->TXDATA = (uint32_t)data;
-    } else {
-        obj->serial.periph.uart->TXDATA = (uint32_t)data;
-    }
-}
-
-int serial_read_asynch(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        return (int)obj->serial.periph.leuart->RXDATA;
-    } else {
-        return (int)obj->serial.periph.uart->RXDATA;
-    }
-}
-
-uint8_t serial_tx_int_flag(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        return (obj->serial.periph.leuart->IF & LEUART_IF_TXBL) ? true : false;
-    } else {
-        return (obj->serial.periph.uart->IF & USART_IF_TXBL) ? true : false;
-    }
-}
-
-uint8_t serial_rx_int_flag(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        return (obj->serial.periph.leuart->IF & LEUART_IF_RXDATAV) ? true : false;
-    } else {
-        return (obj->serial.periph.uart->IF & USART_IF_RXDATAV) ? true : false;
-    }
-}
-
-void serial_read_asynch_complete(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        obj->serial.periph.leuart->IFC |= LEUART_IFC_RXOF; // in case it got full
-    } else {
-        obj->serial.periph.uart->IFC |= USART_IFC_RXFULL; // in case it got full
-    }
-}
-
-void serial_write_asynch_complete(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        obj->serial.periph.leuart->IFC |= LEUART_IFC_TXC;
-    } else {
-        obj->serial.periph.uart->IFC |= USART_IFC_TXC;
-    }
-}
-
-/** Enable and set the interrupt handler for write (TX)
- *
- * @param obj     The serial object
- * @param address The address of TX handler
- * @param enable  Set to non-zero to enable or zero to disable
- */
-void serial_write_enable_interrupt(serial_t *obj, uint32_t address, uint8_t enable)
-{
-    NVIC_SetVector(serial_get_tx_irq_index(obj), address);
-    serial_irq_set(obj, (SerialIrq)1, enable);
-}
-
-/** Enable and set the interrupt handler for read (RX)
- *
- * @param obj     The serial object
- * @param address The address of RX handler
- * @param enable  Set to non-zero to enable or zero to disable
- */
-void serial_read_enable_interrupt(serial_t *obj, uint32_t address, uint8_t enable)
-{
-    NVIC_SetVector(serial_get_rx_irq_index(obj), address);
-    serial_irq_set(obj, (SerialIrq)0, enable);
-}
-
-uint8_t serial_interrupt_enabled(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        return (obj->serial.periph.leuart->IEN & (LEUART_IEN_RXDATAV | LEUART_IEN_TXBL)) ? true : false;
-    } else {
-        return (obj->serial.periph.uart->IEN & (USART_IEN_RXDATAV | USART_IEN_TXBL)) ? true : false;
     }
 }
 
@@ -1660,7 +1552,7 @@ static void serial_dmaActivate(serial_t *obj, void* cb, void* buffer, int length
  * @param event  The logical OR of the TX events to configure
  * @param enable Set to non-zero to enable events, or zero to disable them
  */
-void serial_tx_enable_event(serial_t *obj, int event, uint8_t enable)
+static void serial_tx_enable_event(serial_t *obj, int event, uint8_t enable)
 {
     // Shouldn't have to enable TX interrupt here, just need to keep track of the requested events.
     if(enable) obj->serial.events |= event;
@@ -1672,7 +1564,7 @@ void serial_tx_enable_event(serial_t *obj, int event, uint8_t enable)
  * @param event  The logical OR of the RX events to configure
  * @param enable Set to non-zero to enable events, or zero to disable them
  */
-void serial_rx_enable_event(serial_t *obj, int event, uint8_t enable)
+static void serial_rx_enable_event(serial_t *obj, int event, uint8_t enable)
 {
     if(enable) {
         obj->serial.events |= event;
@@ -1720,7 +1612,7 @@ void serial_rx_enable_event(serial_t *obj, int event, uint8_t enable)
  * @param tx        The buffer for sending.
  * @param tx_length The number of words to transmit.
  */
-void serial_tx_buffer_set(serial_t *obj, void *tx, int tx_length, uint8_t width)
+static void serial_tx_buffer_set(serial_t *obj, void *tx, int tx_length, uint8_t width)
 {
     // We only support byte buffers for now
     MBED_ASSERT(width == 8);
@@ -1740,7 +1632,7 @@ void serial_tx_buffer_set(serial_t *obj, void *tx, int tx_length, uint8_t width)
  * @param rx        The buffer for receiving.
  * @param rx_length The number of words to read.
  */
-void serial_rx_buffer_set(serial_t *obj, void *rx, int rx_length, uint8_t width)
+static void serial_rx_buffer_set(serial_t *obj, void *rx, int rx_length, uint8_t width)
 {
     // We only support byte buffers for now
     MBED_ASSERT(width == 8);
@@ -1947,7 +1839,7 @@ uint8_t serial_rx_active(serial_t *obj)
  * @param obj The serial object
  * @return Returns event flags if a TX transfer termination condition was met or 0 otherwise
  */
-int serial_tx_irq_handler_asynch(serial_t *obj)
+static int serial_tx_irq_handler_asynch(serial_t *obj)
 {
     /* This interrupt handler is called from USART irq */
     uint8_t *buf = obj->tx_buff.buffer;
@@ -1998,7 +1890,7 @@ int serial_tx_irq_handler_asynch(serial_t *obj)
  * @param obj The serial object
  * @return Returns event flags if a RX transfer termination condition was met or 0 otherwise
  */
-int serial_rx_irq_handler_asynch(serial_t *obj)
+static int serial_rx_irq_handler_asynch(serial_t *obj)
 {
     int event = 0;
 
