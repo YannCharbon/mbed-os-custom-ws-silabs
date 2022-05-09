@@ -1112,6 +1112,79 @@ const PinMap *serial_rts_pinmap()
     return PinMap_UART_RTS;
 }
 
+#if DEVICE_SERIAL_FC
+
+/**
+ * Set HW Control Flow
+ * @param obj    The serial object
+ * @param type   The Control Flow type (FlowControlNone, FlowControlRTS, FlowControlCTS, FlowControlRTSCTS)
+ * @param pinmap Pointer to structure which holds static pinmap
+ */
+#if STATIC_PINMAP_READY
+#define SERIAL_SET_FC_DIRECT serial_set_flow_control_direct
+void serial_set_flow_control_direct(serial_t *obj, FlowControl type, const serial_fc_pinmap_t *pinmap)
+#else
+#define SERIAL_SET_FC_DIRECT _serial_set_flow_control_direct
+static void _serial_set_flow_control_direct(serial_t *obj, FlowControl type, const serial_fc_pinmap_t *pinmap)
+#endif
+{
+    USART_TypeDef *usart = obj->serial.periph.uart;
+
+    if ((type == FlowControlRTS) || (type == FlowControlRTSCTS)) {
+        // Set RTS location
+        MBED_ASSERT(pinmap->rx_flow_pin != NC);
+        usart->ROUTELOC1 = (usart->ROUTELOC1 & (~_USART_ROUTELOC1_RTSLOC_MASK)) | (pinmap->rx_flow_function << _USART_ROUTELOC1_RTSLOC_SHIFT);
+        usart->ROUTEPEN |= USART_ROUTEPEN_RTSPEN;
+
+        pin_mode(pinmap->rx_flow_pin, PushPull); // need to init at 0 ?
+    } else {
+        usart->ROUTEPEN &= ~USART_ROUTEPEN_RTSPEN;
+
+        if (pinmap->rx_flow_pin != NC) {
+            pin_mode(pinmap->rx_flow_pin, Disabled);
+        }
+    }
+
+    if ((type == FlowControlCTS) || (type == FlowControlRTSCTS)) {
+        // Set CTS location
+        MBED_ASSERT(pinmap->tx_flow_pin != NC);
+        usart->ROUTELOC1 = (usart->ROUTELOC1 & (~_USART_ROUTELOC1_CTSLOC_MASK)) | (pinmap->tx_flow_function << _USART_ROUTELOC1_CTSLOC_SHIFT);
+        usart->ROUTEPEN |= USART_ROUTEPEN_CTSPEN;
+        // Enable CTS
+        usart->CTRLX |= USART_CTRLX_CTSEN;
+
+        pin_mode(pinmap->tx_flow_pin, Input); // InputPullDown ?
+    } else {
+        usart->ROUTEPEN &= ~USART_ROUTEPEN_CTSPEN;
+        // Disable CTS
+        usart->CTRLX &= ~USART_CTRLX_CTSEN;
+
+        if (pinmap->tx_flow_pin != NC) {
+            pin_mode(pinmap->tx_flow_pin, Disabled);
+        }
+    }
+}
+
+/**
+ * Set HW Control Flow
+ * @param obj    The serial object
+ * @param type   The Control Flow type (FlowControlNone, FlowControlRTS, FlowControlCTS, FlowControlRTSCTS)
+ * @param rxflow Pin for the rxflow
+ * @param txflow Pin for the txflow
+ */
+void serial_set_flow_control(serial_t *obj, FlowControl type, PinName rxflow, PinName txflow)
+{
+    int tx_flow_function = (int)pinmap_find_function(txflow, PinMap_UART_CTS);
+    int rx_flow_function = (int)pinmap_find_function(rxflow, PinMap_UART_RTS);
+    // TODO check if it's the correct uart
+
+    const serial_fc_pinmap_t explicit_uart_fc_pinmap = {0, txflow, tx_flow_function, rxflow, rx_flow_function};
+
+    SERIAL_SET_FC_DIRECT(obj, type, &explicit_uart_fc_pinmap);
+}
+
+#endif /* DEVICE_SERIAL_FC */
+
 /************************************************************************************
  *          DMA helper functions                                                    *
  ************************************************************************************/
