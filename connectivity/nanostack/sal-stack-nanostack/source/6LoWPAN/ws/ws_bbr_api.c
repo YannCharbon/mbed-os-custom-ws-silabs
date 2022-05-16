@@ -219,6 +219,8 @@ static void ws_bbr_rpl_version_increase(protocol_interface_info_entry_t *cur)
 
 void ws_bbr_rpl_config(protocol_interface_info_entry_t *cur, uint8_t imin, uint8_t doubling, uint8_t redundancy, uint16_t dag_max_rank_increase, uint16_t min_hop_rank_increase, uint32_t lifetime)
 {
+    tr_warn("Gotten %s (imin = %d)", __func__, imin);
+
     if (imin == 0 || doubling == 0) {
         // use default values
         imin = WS_RPL_DIO_IMIN_SMALL;

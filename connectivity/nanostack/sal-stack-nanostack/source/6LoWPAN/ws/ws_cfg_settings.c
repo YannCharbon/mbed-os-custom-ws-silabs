@@ -845,6 +845,8 @@ int8_t ws_cfg_bbr_set(protocol_interface_info_entry_t *cur, ws_bbr_cfg_t *new_cf
 {
     (void) flags;
 
+    tr_warn("Gotten %s", __func__);
+
     int8_t ret = ws_cfg_bbr_validate(new_cfg);
     if (!(flags & CFG_FLAGS_BOOTSTRAP_SET_VALUES) && ret != CFG_SETTINGS_CHANGED) {
         return ret;
