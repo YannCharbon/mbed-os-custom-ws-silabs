@@ -108,11 +108,11 @@ void i2c_init(i2c_t *obj, PinName sda, PinName scl)
     I2CName i2c_sda = (I2CName) pinmap_peripheral(sda, PinMap_I2C_SDA);
     I2CName i2c_scl = (I2CName) pinmap_peripheral(scl, PinMap_I2C_SCL);
     obj->i2c.i2c = (I2C_TypeDef*) pinmap_merge(i2c_sda, i2c_scl);
-    MBED_ASSERT(((unsigned int) obj->i2c.i2c) != NC);
+    MBED_ASSERT((int)obj->i2c.i2c != NC);
 
     /* You need both SDA and SCL for I2C, so configuring one of them to NC is illegal */
-    MBED_ASSERT((unsigned int)sda != NC);
-    MBED_ASSERT((unsigned int)scl != NC);
+    MBED_ASSERT((int)sda != NC);
+    MBED_ASSERT((int)scl != NC);
 
     /* Enable clock for the peripheral */
     CMU_ClockEnable(i2c_get_clock(obj), true);

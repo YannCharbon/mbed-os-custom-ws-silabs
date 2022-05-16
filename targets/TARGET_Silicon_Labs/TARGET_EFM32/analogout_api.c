@@ -41,10 +41,10 @@ void analogout_init(dac_t *obj, PinName pin)
 {
     /* init in-memory structure */
     obj->dac = (DAC_TypeDef *) pinmap_peripheral(pin, PinMap_DAC);
-    MBED_ASSERT((unsigned int) obj->dac != NC);
+    MBED_ASSERT((int)obj->dac != NC);
 
     obj->channel = pin_location(pin, PinMap_DAC);
-    MBED_ASSERT((unsigned int) obj->channel != NC);
+    MBED_ASSERT((int)obj->channel != NC);
 
     pin_mode(pin, Disabled);
 

@@ -409,7 +409,7 @@ static inline IRQn_Type serial_get_tx_irq_index(serial_t *obj)
 * @param obj pointer to serial object
 * @return CMU_Clock_TypeDef for U(S)ART
 */
-inline CMU_Clock_TypeDef serial_get_clock(serial_t *obj)
+static inline CMU_Clock_TypeDef serial_get_clock(serial_t *obj)
 {
     switch ((uint32_t)obj->serial.periph.uart) {
 #ifdef UART0
@@ -457,14 +457,14 @@ inline CMU_Clock_TypeDef serial_get_clock(serial_t *obj)
     }
 }
 
-void serial_preinit(serial_t *obj, PinName tx, PinName rx)
+static void serial_preinit(serial_t *obj, PinName tx, PinName rx)
 {
     /* Get UART object connected to the given pins */
     UARTName uart_tx = (UARTName) pinmap_peripheral(tx, PinMap_UART_TX);
     UARTName uart_rx = (UARTName) pinmap_peripheral(rx, PinMap_UART_RX);
     /* Check that pins are connected to same UART */
     UARTName uart = (UARTName) pinmap_merge(uart_tx, uart_rx);
-    MBED_ASSERT((unsigned int) uart != NC);
+    MBED_ASSERT((int)uart != NC);
 
     obj->serial.periph.uart = (USART_TypeDef *) uart;
 
@@ -475,7 +475,7 @@ void serial_preinit(serial_t *obj, PinName tx, PinName rx)
 #if defined(_SILICON_LABS_32B_PLATFORM_1)
     /* Check that pins are used by same location for the given UART */
     obj->serial.location = pinmap_merge(uart_tx_loc, uart_rx_loc);
-    MBED_ASSERT(obj->serial.location != NC);
+    MBED_ASSERT((int)obj->serial.location != NC);
 #else
     obj->serial.location_tx = uart_tx_loc;
     obj->serial.location_rx = uart_rx_loc;
@@ -597,13 +597,13 @@ static void serial_set_route(serial_t *obj)
             obj->serial.periph.leuart->ROUTE &= ~LEUART_ROUTE_RXPEN;
         }
 #else
-        if(obj->serial.location_tx != NC) {
+        if((int)obj->serial.location_tx != NC) {
             obj->serial.periph.leuart->ROUTELOC0 = (obj->serial.periph.leuart->ROUTELOC0 & (~_LEUART_ROUTELOC0_TXLOC_MASK)) | (obj->serial.location_tx << _LEUART_ROUTELOC0_TXLOC_SHIFT);
             obj->serial.periph.leuart->ROUTEPEN  = (obj->serial.periph.leuart->ROUTEPEN & (~_LEUART_ROUTEPEN_TXPEN_MASK)) | LEUART_ROUTEPEN_TXPEN;
         } else {
             obj->serial.periph.leuart->ROUTEPEN  = (obj->serial.periph.leuart->ROUTEPEN & (~_LEUART_ROUTEPEN_TXPEN_MASK));
         }
-        if(obj->serial.location_rx != NC) {
+        if((int)obj->serial.location_rx != NC) {
             obj->serial.periph.leuart->ROUTELOC0 = (obj->serial.periph.leuart->ROUTELOC0 & (~_LEUART_ROUTELOC0_RXLOC_MASK)) | (obj->serial.location_rx << _LEUART_ROUTELOC0_RXLOC_SHIFT);
             obj->serial.periph.leuart->ROUTEPEN  = (obj->serial.periph.leuart->ROUTEPEN & (~_LEUART_ROUTEPEN_RXPEN_MASK)) | LEUART_ROUTEPEN_RXPEN;
         } else {
@@ -626,13 +626,13 @@ static void serial_set_route(serial_t *obj)
             obj->serial.periph.uart->ROUTE &= ~USART_ROUTE_RXPEN;
         }
 #else
-        if(obj->serial.location_tx != NC) {
+        if((int)obj->serial.location_tx != NC) {
             obj->serial.periph.uart->ROUTELOC0 = (obj->serial.periph.uart->ROUTELOC0 & (~_USART_ROUTELOC0_TXLOC_MASK)) | (obj->serial.location_tx << _USART_ROUTELOC0_TXLOC_SHIFT);
             obj->serial.periph.uart->ROUTEPEN  = (obj->serial.periph.uart->ROUTEPEN & (~_USART_ROUTEPEN_TXPEN_MASK)) | USART_ROUTEPEN_TXPEN;
         } else {
             obj->serial.periph.uart->ROUTEPEN  = (obj->serial.periph.uart->ROUTEPEN & (~_USART_ROUTEPEN_TXPEN_MASK));
         }
-        if(obj->serial.location_rx != NC) {
+        if((int)obj->serial.location_rx != NC) {
             obj->serial.periph.uart->ROUTELOC0 = (obj->serial.periph.uart->ROUTELOC0 & (~_USART_ROUTELOC0_RXLOC_MASK)) | (obj->serial.location_rx << _USART_ROUTELOC0_RXLOC_SHIFT);
             obj->serial.periph.uart->ROUTEPEN  = (obj->serial.periph.uart->ROUTEPEN & (~_USART_ROUTEPEN_RXPEN_MASK)) | USART_ROUTEPEN_RXPEN;
         } else {
@@ -907,114 +907,6 @@ void serial_format(serial_t *obj, int data_bits, SerialParity parity, int stop_b
     }
 }
 
-/******************************************************************************
- *                               INTERRUPTS                                   *
- ******************************************************************************/
-uint8_t serial_tx_ready(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        return (obj->serial.periph.leuart->STATUS & LEUART_STATUS_TXBL) ? true : false;
-    } else {
-        return (obj->serial.periph.uart->STATUS & USART_STATUS_TXBL) ? true : false;
-    }
-}
-
-uint8_t serial_rx_ready(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        return (obj->serial.periph.leuart->STATUS & LEUART_STATUS_RXDATAV) ? true : false;
-    } else {
-        return (obj->serial.periph.uart->STATUS & USART_STATUS_RXDATAV) ? true : false;
-    }
-}
-
-void serial_write_asynch(serial_t *obj, int data)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        obj->serial.periph.leuart->TXDATA = (uint32_t)data;
-    } else {
-        obj->serial.periph.uart->TXDATA = (uint32_t)data;
-    }
-}
-
-int serial_read_asynch(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        return (int)obj->serial.periph.leuart->RXDATA;
-    } else {
-        return (int)obj->serial.periph.uart->RXDATA;
-    }
-}
-
-uint8_t serial_tx_int_flag(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        return (obj->serial.periph.leuart->IF & LEUART_IF_TXBL) ? true : false;
-    } else {
-        return (obj->serial.periph.uart->IF & USART_IF_TXBL) ? true : false;
-    }
-}
-
-uint8_t serial_rx_int_flag(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        return (obj->serial.periph.leuart->IF & LEUART_IF_RXDATAV) ? true : false;
-    } else {
-        return (obj->serial.periph.uart->IF & USART_IF_RXDATAV) ? true : false;
-    }
-}
-
-void serial_read_asynch_complete(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        obj->serial.periph.leuart->IFC |= LEUART_IFC_RXOF; // in case it got full
-    } else {
-        obj->serial.periph.uart->IFC |= USART_IFC_RXFULL; // in case it got full
-    }
-}
-
-void serial_write_asynch_complete(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        obj->serial.periph.leuart->IFC |= LEUART_IFC_TXC;
-    } else {
-        obj->serial.periph.uart->IFC |= USART_IFC_TXC;
-    }
-}
-
-/** Enable and set the interrupt handler for write (TX)
- *
- * @param obj     The serial object
- * @param address The address of TX handler
- * @param enable  Set to non-zero to enable or zero to disable
- */
-void serial_write_enable_interrupt(serial_t *obj, uint32_t address, uint8_t enable)
-{
-    NVIC_SetVector(serial_get_tx_irq_index(obj), address);
-    serial_irq_set(obj, (SerialIrq)1, enable);
-}
-
-/** Enable and set the interrupt handler for read (RX)
- *
- * @param obj     The serial object
- * @param address The address of RX handler
- * @param enable  Set to non-zero to enable or zero to disable
- */
-void serial_read_enable_interrupt(serial_t *obj, uint32_t address, uint8_t enable)
-{
-    NVIC_SetVector(serial_get_rx_irq_index(obj), address);
-    serial_irq_set(obj, (SerialIrq)0, enable);
-}
-
-uint8_t serial_interrupt_enabled(serial_t *obj)
-{
-    if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
-        return (obj->serial.periph.leuart->IEN & (LEUART_IEN_RXDATAV | LEUART_IEN_TXBL)) ? true : false;
-    } else {
-        return (obj->serial.periph.uart->IEN & (USART_IEN_RXDATAV | USART_IEN_TXBL)) ? true : false;
-    }
-}
-
 /**
  * Set handler for all serial interrupts (is probably SerialBase::_handler())
  * and store IRQ ID to be returned to the handler upon interrupt. ID is
@@ -1053,7 +945,7 @@ void serial_irq_set(serial_t *obj, SerialIrq irq, uint32_t enable)
                 NVIC_EnableIRQ(serial_get_rx_irq_index(obj));
             } else { /* TX */
                 obj->serial.periph.leuart->IEN |= LEUART_IEN_TXC;
-                NVIC_ClearPendingIRQ(serial_get_tx_irq_index(obj));
+                NVIC_SetPendingIRQ(serial_get_tx_irq_index(obj));
                 NVIC_SetPriority(serial_get_tx_irq_index(obj), 1);
                 NVIC_EnableIRQ(serial_get_tx_irq_index(obj));
             }
@@ -1075,7 +967,7 @@ void serial_irq_set(serial_t *obj, SerialIrq irq, uint32_t enable)
                 NVIC_EnableIRQ(serial_get_rx_irq_index(obj));
             } else { /* TX */
                 obj->serial.periph.uart->IEN |= USART_IEN_TXC;
-                NVIC_ClearPendingIRQ(serial_get_tx_irq_index(obj));
+                NVIC_SetPendingIRQ(serial_get_tx_irq_index(obj));
                 NVIC_SetPriority(serial_get_tx_irq_index(obj), 1);
                 NVIC_EnableIRQ(serial_get_tx_irq_index(obj));
             }
@@ -1118,10 +1010,8 @@ void serial_putc(serial_t *obj, int c)
      * need to use serial_writable(). */
     if(LEUART_REF_VALID(obj->serial.periph.leuart)) {
         LEUART_Tx(obj->serial.periph.leuart, (uint8_t)(c));
-        while (!(obj->serial.periph.leuart->STATUS & LEUART_STATUS_TXC));
     } else {
         USART_Tx(obj->serial.periph.uart, (uint8_t)(c));
-        while (!(obj->serial.periph.uart->STATUS & USART_STATUS_TXC));
     }
 }
 
@@ -1219,6 +1109,79 @@ const PinMap *serial_rts_pinmap()
 
     return PinMap_UART_RTS;
 }
+
+#if DEVICE_SERIAL_FC
+
+/**
+ * Set HW Control Flow
+ * @param obj    The serial object
+ * @param type   The Control Flow type (FlowControlNone, FlowControlRTS, FlowControlCTS, FlowControlRTSCTS)
+ * @param pinmap Pointer to structure which holds static pinmap
+ */
+#if STATIC_PINMAP_READY
+#define SERIAL_SET_FC_DIRECT serial_set_flow_control_direct
+void serial_set_flow_control_direct(serial_t *obj, FlowControl type, const serial_fc_pinmap_t *pinmap)
+#else
+#define SERIAL_SET_FC_DIRECT _serial_set_flow_control_direct
+static void _serial_set_flow_control_direct(serial_t *obj, FlowControl type, const serial_fc_pinmap_t *pinmap)
+#endif
+{
+    USART_TypeDef *usart = obj->serial.periph.uart;
+
+    if ((type == FlowControlRTS) || (type == FlowControlRTSCTS)) {
+        // Set RTS location
+        MBED_ASSERT(pinmap->rx_flow_pin != NC);
+        usart->ROUTELOC1 = (usart->ROUTELOC1 & (~_USART_ROUTELOC1_RTSLOC_MASK)) | (pinmap->rx_flow_function << _USART_ROUTELOC1_RTSLOC_SHIFT);
+        usart->ROUTEPEN |= USART_ROUTEPEN_RTSPEN;
+
+        pin_mode(pinmap->rx_flow_pin, PushPull); // need to init at 0 ?
+    } else {
+        usart->ROUTEPEN &= ~USART_ROUTEPEN_RTSPEN;
+
+        if (pinmap->rx_flow_pin != NC) {
+            pin_mode(pinmap->rx_flow_pin, Disabled);
+        }
+    }
+
+    if ((type == FlowControlCTS) || (type == FlowControlRTSCTS)) {
+        // Set CTS location
+        MBED_ASSERT(pinmap->tx_flow_pin != NC);
+        usart->ROUTELOC1 = (usart->ROUTELOC1 & (~_USART_ROUTELOC1_CTSLOC_MASK)) | (pinmap->tx_flow_function << _USART_ROUTELOC1_CTSLOC_SHIFT);
+        usart->ROUTEPEN |= USART_ROUTEPEN_CTSPEN;
+        // Enable CTS
+        usart->CTRLX |= USART_CTRLX_CTSEN;
+
+        pin_mode(pinmap->tx_flow_pin, Input); // InputPullDown ?
+    } else {
+        usart->ROUTEPEN &= ~USART_ROUTEPEN_CTSPEN;
+        // Disable CTS
+        usart->CTRLX &= ~USART_CTRLX_CTSEN;
+
+        if (pinmap->tx_flow_pin != NC) {
+            pin_mode(pinmap->tx_flow_pin, Disabled);
+        }
+    }
+}
+
+/**
+ * Set HW Control Flow
+ * @param obj    The serial object
+ * @param type   The Control Flow type (FlowControlNone, FlowControlRTS, FlowControlCTS, FlowControlRTSCTS)
+ * @param rxflow Pin for the rxflow
+ * @param txflow Pin for the txflow
+ */
+void serial_set_flow_control(serial_t *obj, FlowControl type, PinName rxflow, PinName txflow)
+{
+    int tx_flow_function = (int)pinmap_find_function(txflow, PinMap_UART_CTS);
+    int rx_flow_function = (int)pinmap_find_function(rxflow, PinMap_UART_RTS);
+    // TODO check if it's the correct uart
+
+    const serial_fc_pinmap_t explicit_uart_fc_pinmap = {0, txflow, tx_flow_function, rxflow, rx_flow_function};
+
+    SERIAL_SET_FC_DIRECT(obj, type, &explicit_uart_fc_pinmap);
+}
+
+#endif /* DEVICE_SERIAL_FC */
 
 /************************************************************************************
  *          DMA helper functions                                                    *
@@ -1660,7 +1623,7 @@ static void serial_dmaActivate(serial_t *obj, void* cb, void* buffer, int length
  * @param event  The logical OR of the TX events to configure
  * @param enable Set to non-zero to enable events, or zero to disable them
  */
-void serial_tx_enable_event(serial_t *obj, int event, uint8_t enable)
+static void serial_tx_enable_event(serial_t *obj, int event, uint8_t enable)
 {
     // Shouldn't have to enable TX interrupt here, just need to keep track of the requested events.
     if(enable) obj->serial.events |= event;
@@ -1672,7 +1635,7 @@ void serial_tx_enable_event(serial_t *obj, int event, uint8_t enable)
  * @param event  The logical OR of the RX events to configure
  * @param enable Set to non-zero to enable events, or zero to disable them
  */
-void serial_rx_enable_event(serial_t *obj, int event, uint8_t enable)
+static void serial_rx_enable_event(serial_t *obj, int event, uint8_t enable)
 {
     if(enable) {
         obj->serial.events |= event;
@@ -1720,7 +1683,7 @@ void serial_rx_enable_event(serial_t *obj, int event, uint8_t enable)
  * @param tx        The buffer for sending.
  * @param tx_length The number of words to transmit.
  */
-void serial_tx_buffer_set(serial_t *obj, void *tx, int tx_length, uint8_t width)
+static void serial_tx_buffer_set(serial_t *obj, void *tx, int tx_length, uint8_t width)
 {
     // We only support byte buffers for now
     MBED_ASSERT(width == 8);
@@ -1740,7 +1703,7 @@ void serial_tx_buffer_set(serial_t *obj, void *tx, int tx_length, uint8_t width)
  * @param rx        The buffer for receiving.
  * @param rx_length The number of words to read.
  */
-void serial_rx_buffer_set(serial_t *obj, void *rx, int rx_length, uint8_t width)
+static void serial_rx_buffer_set(serial_t *obj, void *rx, int rx_length, uint8_t width)
 {
     // We only support byte buffers for now
     MBED_ASSERT(width == 8);
@@ -1947,7 +1910,7 @@ uint8_t serial_rx_active(serial_t *obj)
  * @param obj The serial object
  * @return Returns event flags if a TX transfer termination condition was met or 0 otherwise
  */
-int serial_tx_irq_handler_asynch(serial_t *obj)
+static int serial_tx_irq_handler_asynch(serial_t *obj)
 {
     /* This interrupt handler is called from USART irq */
     uint8_t *buf = obj->tx_buff.buffer;
@@ -1998,7 +1961,7 @@ int serial_tx_irq_handler_asynch(serial_t *obj)
  * @param obj The serial object
  * @return Returns event flags if a RX transfer termination condition was met or 0 otherwise
  */
-int serial_rx_irq_handler_asynch(serial_t *obj)
+static int serial_rx_irq_handler_asynch(serial_t *obj)
 {
     int event = 0;
 
