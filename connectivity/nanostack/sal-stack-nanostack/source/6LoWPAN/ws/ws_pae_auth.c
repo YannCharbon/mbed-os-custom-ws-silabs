@@ -87,6 +87,15 @@
 #define TIME_MINIMUM_DIFFERENCE                5
 #define TIME_DIFFERENCE_THRESHOLD              3600
 
+#ifdef USE_FIXED_GTK
+const uint8_t fixed_gtk_keys[4][16] = {
+      {0xBB, 0x06, 0x08, 0x57, 0x2C, 0xE1, 0x4D, 0x7B, 0xA2, 0xD1, 0x55, 0x49, 0x9C, 0xC8, 0x51, 0x9B},
+      {0x18, 0x49, 0x83, 0x5A, 0x01, 0x68, 0x4F, 0xC8, 0xAC, 0xA5, 0x83, 0xF3, 0x70, 0x40, 0xF7, 0x4C},
+      {0x59, 0xEA, 0x58, 0xA4, 0xB8, 0x83, 0x49, 0x38, 0xAD, 0xCB, 0x6B, 0xE3, 0x88, 0xC2, 0x62, 0x63},
+      {0xE4, 0x26, 0xB4, 0x91, 0xBC, 0x05, 0x4A, 0xF3, 0x9B, 0x59, 0xF0, 0x53, 0xEC, 0x12, 0x8E, 0x5F}
+};
+#endif /* USE_FIXED_GTK */
+
 typedef struct {
     ns_list_link_t link;                                     /**< Link */
     uint16_t pan_id;                                         /**< PAN ID */
@@ -995,9 +1004,13 @@ static void ws_pae_auth_gtk_key_insert(pae_auth_t *pae_auth)
         sec_prot_keys_gtk_clear(pae_auth->next_gtks, next_gtk_index);
         sec_prot_keys_gtk_set(pae_auth->next_gtks, next_gtk_index, gtk_value, 0);
     } else {
+#ifdef USE_FIXED_GTK
+        memcpy(&gtk_value, fixed_gtk_keys[install_index], GTK_LEN);
+#else
         do {
             randLIB_get_n_bytes_random(gtk_value, GTK_LEN);
         } while (sec_prot_keys_gtk_valid_check(gtk_value) < 0);
+#endif /* USE_FIXED_GTK */
     }
 
     // Gets latest installed key lifetime and adds GTK expire offset to it
