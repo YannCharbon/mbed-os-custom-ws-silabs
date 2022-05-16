@@ -306,7 +306,7 @@ void ws_cfg_network_size_print(ws_cfg_nw_size_t *cfg)
             cfg->timing.disc_trickle_k,
             cfg->timing.pan_timeout);
     // Print BBR config
-    tr_warn("BBR config: imin: %d, imax: %d, k: %d, max rank increase: %d", cfg->bbr.dio_interval_min, 
+    tr_warn("BBR config: DIO imin: %d, DIO doubling: %d, DIO redundancy_constant: %d, max rank increase: %d", cfg->bbr.dio_interval_min, 
         cfg->bbr.dio_interval_doublings, cfg->bbr.dio_redundancy_constant, cfg->bbr.dag_max_rank_increase);
     // Print EAPOL config
     tr_warn("EAPOL config: imin: %d, imax: %d, timer exp: %d, retry timeout: %d", cfg->sec_prot.sec_prot_trickle_imin,
