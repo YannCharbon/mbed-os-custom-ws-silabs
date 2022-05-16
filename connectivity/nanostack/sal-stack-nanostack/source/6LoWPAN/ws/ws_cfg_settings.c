@@ -297,9 +297,30 @@ cfg_network_size_type_e ws_cfg_network_config_get(protocol_interface_info_entry_
     return ws_cfg_config_get_by_size(cur, cfg.network_size);
 }
 
+void ws_cfg_network_size_print(ws_cfg_nw_size_t *cfg)
+{
+    // Print Wi-SUN trickle parameters
+    tr_warn("Wi-SUN trickle parameters: imin=%d, imax=%d, k=%d, timer_exp=%d",
+            cfg->timing.disc_trickle_imin,
+            cfg->timing.disc_trickle_imax,
+            cfg->timing.disc_trickle_k,
+            cfg->timing.pan_timeout);
+    // Print BBR config
+    tr_warn("BBR config: imin: %d, imax: %d, k: %d, max rank increase: %d", cfg->bbr.dio_interval_min, 
+        cfg->bbr.dio_interval_doublings, cfg->bbr.dio_redundancy_constant, cfg->bbr.dag_max_rank_increase);
+    // Print EAPOL config
+    tr_warn("EAPOL config: imin: %d, imax: %d, timer exp: %d, retry timeout: %d", cfg->sec_prot.sec_prot_trickle_imin,
+        cfg->sec_prot.sec_prot_trickle_imax, cfg->sec_prot.sec_prot_trickle_timer_exp, cfg->sec_prot.sec_prot_retry_timeout);
+    // Print MPL config
+    tr_warn("MPL config: imin: %d, imax: %d, k: %d, seed lifetime: %d", cfg->mpl.mpl_trickle_imin,
+        cfg->mpl.mpl_trickle_imax, cfg->mpl.mpl_trickle_k, cfg->mpl.seed_set_entry_lifetime);
+}
+
 
 static void ws_cfg_network_size_config_set_small(ws_cfg_nw_size_t *cfg)
 {
+    tr_warn("Setting network size to small (%s)", __func__);
+
     // Configure the Wi-SUN parent configuration
     cfg->gen.rpl_parent_candidate_max = WS_RPL_PARENT_CANDIDATE_MAX;
     cfg->gen.rpl_selected_parent_max = WS_RPL_SELECTED_PARENT_MAX;
@@ -339,10 +360,15 @@ static void ws_cfg_network_size_config_set_small(ws_cfg_nw_size_t *cfg)
     cfg->mpl.mpl_trickle_timer_exp = MPL_SMALL_EXPIRATIONS;
     cfg->mpl.seed_set_entry_lifetime = MPL_SMALL_SEED_LIFETIME;
 
+    // Print the configuration
+    ws_cfg_network_size_print(cfg);
+
 }
 
 static void ws_cfg_network_size_config_set_medium(ws_cfg_nw_size_t *cfg)
 {
+    tr_warn("Setting network size to medium (%s)", __func__);
+
     // Configure the Wi-SUN parent configuration
     cfg->gen.rpl_parent_candidate_max = WS_RPL_PARENT_CANDIDATE_MAX;
     cfg->gen.rpl_selected_parent_max = WS_RPL_SELECTED_PARENT_MAX;
@@ -381,10 +407,15 @@ static void ws_cfg_network_size_config_set_medium(ws_cfg_nw_size_t *cfg)
     cfg->mpl.mpl_trickle_k = MPL_MEDIUM_K;
     cfg->mpl.mpl_trickle_timer_exp = MPL_MEDIUM_EXPIRATIONS;
     cfg->mpl.seed_set_entry_lifetime = MPL_MEDIUM_SEED_LIFETIME;
+
+    // Print the configuration
+    ws_cfg_network_size_print(cfg);
 }
 
 static void ws_cfg_network_size_config_set_large(ws_cfg_nw_size_t *cfg)
 {
+    tr_warn("Setting network size to large (%s)", __func__);
+
     // Configure the Wi-SUN parent configuration
     cfg->gen.rpl_parent_candidate_max = WS_RPL_PARENT_CANDIDATE_MAX;
     cfg->gen.rpl_selected_parent_max = WS_RPL_SELECTED_PARENT_MAX;
@@ -423,10 +454,15 @@ static void ws_cfg_network_size_config_set_large(ws_cfg_nw_size_t *cfg)
     cfg->mpl.mpl_trickle_k = MPL_LARGE_K;
     cfg->mpl.mpl_trickle_timer_exp = MPL_LARGE_EXPIRATIONS;
     cfg->mpl.seed_set_entry_lifetime = MPL_LARGE_SEED_LIFETIME;
+
+    // Print the configuration
+    ws_cfg_network_size_print(cfg);
 }
 
 static void ws_cfg_network_size_config_set_xlarge(ws_cfg_nw_size_t *cfg)
 {
+    tr_warn("Setting network size to xlarge (%s)", __func__);
+
     // Configure the Wi-SUN parent configuration
     cfg->gen.rpl_parent_candidate_max = WS_RPL_PARENT_CANDIDATE_MAX;
     cfg->gen.rpl_selected_parent_max = WS_RPL_SELECTED_PARENT_MAX;
@@ -465,6 +501,9 @@ static void ws_cfg_network_size_config_set_xlarge(ws_cfg_nw_size_t *cfg)
     cfg->mpl.mpl_trickle_k = MPL_XLARGE_K;
     cfg->mpl.mpl_trickle_timer_exp = MPL_XLARGE_EXPIRATIONS;
     cfg->mpl.seed_set_entry_lifetime = MPL_XLARGE_SEED_LIFETIME;
+
+    // Print the configuration
+    ws_cfg_network_size_print(cfg);
 }
 
 static void ws_cfg_network_size_config_set_certificate(ws_cfg_nw_size_t *cfg)

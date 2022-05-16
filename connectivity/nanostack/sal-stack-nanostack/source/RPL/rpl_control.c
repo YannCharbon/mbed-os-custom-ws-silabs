@@ -1825,8 +1825,10 @@ buffer_t *rpl_control_handler(buffer_t *buf)
 
     switch (buf->options.code) {
         case ICMPV6_CODE_RPL_DIS:
+            tr_warn("Received DIS");
             return rpl_control_dis_handler(cur, domain, buf, multicast);
         case ICMPV6_CODE_RPL_DIO:
+            tr_warn("Received DIO");
             return rpl_control_dio_handler(cur, domain, buf);
 #ifdef HAVE_RPL_DAO_HANDLING
         case ICMPV6_CODE_RPL_DAO:
