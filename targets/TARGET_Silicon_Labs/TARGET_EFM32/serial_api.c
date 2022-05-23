@@ -99,35 +99,35 @@ static void serial_leuart_baud(serial_t *obj, int baudrate);
 /* ISRs for RX and TX events */
 #ifdef UART0
 static void uart0_rx_irq() { uart_irq(UART_0, RxIrq); }
-static void uart0_tx_irq() { uart_irq(UART_0, TxIrq); USART_IntClear((USART_TypeDef*)UART_0, USART_IFC_TXC);}
+static void uart0_tx_irq() { USART_IntClear((USART_TypeDef*)UART_0, USART_IFC_TXC); uart_irq(UART_0, TxIrq);}
 #endif
 #ifdef UART1
 static void uart1_rx_irq() { uart_irq(UART_1, RxIrq); }
-static void uart1_tx_irq() { uart_irq(UART_1, TxIrq); USART_IntClear((USART_TypeDef*)UART_1, USART_IFC_TXC);}
+static void uart1_tx_irq() { USART_IntClear((USART_TypeDef*)UART_1, USART_IFC_TXC); uart_irq(UART_1, TxIrq);}
 #endif
 #ifdef USART0
 static void usart0_rx_irq() { uart_irq(USART_0, RxIrq); }
-static void usart0_tx_irq() { uart_irq(USART_0, TxIrq); USART_IntClear((USART_TypeDef*)USART_0, USART_IFC_TXC);}
+static void usart0_tx_irq() { USART_IntClear((USART_TypeDef*)USART_0, USART_IFC_TXC); uart_irq(USART_0, TxIrq);}
 #endif
 #ifdef USART1
 static void usart1_rx_irq() { uart_irq(USART_1, RxIrq); }
-static void usart1_tx_irq() { uart_irq(USART_1, TxIrq); USART_IntClear((USART_TypeDef*)USART_1, USART_IFC_TXC);}
+static void usart1_tx_irq() { USART_IntClear((USART_TypeDef*)USART_1, USART_IFC_TXC); uart_irq(USART_1, TxIrq);}
 #endif
 #ifdef USART2
 static void usart2_rx_irq() { uart_irq(USART_2, RxIrq); }
-static void usart2_tx_irq() { uart_irq(USART_2, TxIrq); USART_IntClear((USART_TypeDef*)USART_2, USART_IFC_TXC);}
+static void usart2_tx_irq() { USART_IntClear((USART_TypeDef*)USART_2, USART_IFC_TXC); uart_irq(USART_2, TxIrq);}
 #endif
 #ifdef USART3
 static void usart3_rx_irq() { uart_irq(USART_3, RxIrq); }
-static void usart3_tx_irq() { uart_irq(USART_3, TxIrq); USART_IntClear((USART_TypeDef*)USART_3, USART_IFC_TXC);}
+static void usart3_tx_irq() { USART_IntClear((USART_TypeDef*)USART_3, USART_IFC_TXC); uart_irq(USART_3, TxIrq);}
 #endif
 #ifdef USART4
 static void usart4_rx_irq() { uart_irq(USART_4, RxIrq); }
-static void usart4_tx_irq() { uart_irq(USART_4, TxIrq); USART_IntClear((USART_TypeDef*)USART_4, USART_IFC_TXC);}
+static void usart4_tx_irq() { USART_IntClear((USART_TypeDef*)USART_4, USART_IFC_TXC); uart_irq(USART_4, TxIrq);}
 #endif
 #ifdef USART5
 static void usart5_rx_irq() { uart_irq(USART_5, RxIrq); }
-static void usart5_tx_irq() { uart_irq(USART_5, TxIrq); USART_IntClear((USART_TypeDef*)USART_5, USART_IFC_TXC);}
+static void usart5_tx_irq() { USART_IntClear((USART_TypeDef*)USART_5, USART_IFC_TXC); uart_irq(USART_5, TxIrq);}
 #endif
 #ifdef LEUART0
 static void leuart0_irq()
