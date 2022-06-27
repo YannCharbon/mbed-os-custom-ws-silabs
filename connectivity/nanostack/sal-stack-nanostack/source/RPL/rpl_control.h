@@ -225,6 +225,8 @@ ipv6_route_predicate_fn_t *rpl_control_get_route_predicate(rpl_domain_t *domain,
 /* Diagnostic APIs */
 void rpl_control_print(route_print_fn_t *print_fn);
 uint16_t rpl_control_route_table_get(struct rpl_instance *instance, uint8_t *prefix, rpl_route_info_t *output_table, uint16_t output_table_len);
+typedef struct rpl_dodag rpl_dodag_t;
+int rpl_control_get_dodag_as_string(char *str, int len);
 
 struct rpl_instance *rpl_control_enumerate_instances(rpl_domain_t *domain, struct rpl_instance *instance);
 struct rpl_instance *rpl_control_lookup_instance(rpl_domain_t *domain, uint8_t instance_id, const uint8_t *dodagid);

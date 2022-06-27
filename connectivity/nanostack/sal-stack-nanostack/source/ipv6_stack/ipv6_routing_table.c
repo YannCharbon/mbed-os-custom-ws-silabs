@@ -1268,6 +1268,29 @@ void ipv6_route_table_print(route_print_fn_t *print_fn)
     }
 }
 
+// ADDED YCN
+int ipv6_route_table_get_as_string(char* str, int len){
+    int idx = 0;
+
+    ns_list_foreach(ipv6_route_t, route, &ipv6_routing_table) {
+        // Route prefix is variable-length, so need to zero pad for ip6tos
+        uint8_t addr[16] = { 0 };
+        bitcopy(addr, route->prefix, route->prefix_len);
+        ROUTE_PRINT_ADDR_STR_BUFFER_INIT(addr_str);
+        idx += sprintf(&str[idx], "a=%24s/%-3u src='%s' ",
+                ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, addr), route->prefix_len,
+                route_src_names[route->info.source]
+                );
+        if (route->on_link) {
+            idx += sprintf(&str[idx], " ol;");
+        } else {
+            idx += sprintf(&str[idx], " nh=%s;", ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, route->info.next_hop_addr));
+        }  
+    }  
+
+    return idx;
+}
+
 /*
  * This function returns total effective metric, which is a combination
  * of 1) route metric, and 2) interface metric. Can be extended to include

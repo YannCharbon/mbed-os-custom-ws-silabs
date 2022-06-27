@@ -21,6 +21,9 @@
 #include "ns_types.h"
 #include "platform/arm_hal_phy.h"
 
+#include "mbed-os/connectivity/nanostack/sal-stack-nanostack/source/ipv6_stack/ipv6_routing_table.h"
+#include "mbed-os/connectivity/nanostack/sal-stack-nanostack/source/RPL/rpl_control.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -1111,6 +1114,28 @@ void arm_print_routing_table(void);
  * \param print_fn pointer to a printf style output function
  */
 void arm_print_routing_table2(void (*print_fn)(const char *fmt, ...));
+
+/**
+ * @brief Gets the complete routing table as a string.
+ * 
+ * @note Added by Yann Charbon <yann.charbon@heig-vd.ch>
+ * 
+ * @param[out] str The string buffer to store the routing table. 
+ * @param len Allocated size of the string buffer.
+ * @return int Number of bytes written to the string buffer.
+ */
+int arm_get_routing_table_as_string(char* str, int len);
+
+/**
+ * @brief Gets the DODAG as string
+ * 
+ * @note Added by Yann Charbon <yann.charbon@heig-vd.ch>
+ * 
+ * @param[out] str The string buffer to store the DODAG. 
+ * @param len Allocated size of the string buffer.
+ * @return int Number of bytes written to the string buffer.
+ */
+int arm_rpl_control_get_dodag_as_string(char *str, int len);
 
 /**
  * \brief Flush neighbor cache

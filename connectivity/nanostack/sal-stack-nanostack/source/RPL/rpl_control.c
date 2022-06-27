@@ -2005,6 +2005,12 @@ void rpl_control_print(route_print_fn_t *print_fn)
     }
 }
 
+int rpl_control_get_dodag_as_string(char* str, int len){
+    rpl_domain_t * domain = ns_list_get_first(&rpl_domains);
+    rpl_instance_t * instance = ns_list_get_first(&domain->instances);
+    return rpl_upward_dodag_get_as_string(instance, str, len);    
+}
+
 uint8_t rpl_policy_mrhof_parent_set_size_get(const rpl_domain_t *domain)
 {
     return rpl_policy_mrhof_parent_set_size(domain);

@@ -1526,6 +1526,16 @@ void arm_print_routing_table2(void (*print_fn)(const char *fmt, ...))
 #endif
 }
 
+// ADDED YCN
+int arm_get_routing_table_as_string(char* str, int len){
+    return ipv6_route_table_get_as_string(str, len);
+}
+
+// ADDED YCN
+int arm_rpl_control_get_dodag_as_string(char *str, int len){
+    return rpl_control_get_dodag_as_string(str, len);
+}
+
 void arm_print_neigh_cache(void)
 {
     arm_print_neigh_cache2(trace_cmd_print);

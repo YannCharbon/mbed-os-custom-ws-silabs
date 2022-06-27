@@ -269,4 +269,7 @@ void ipv6_route_table_set_max_entries(int8_t interface_id, ipv6_route_src_t sour
 bool ipv6_route_table_source_was_invalidated(ipv6_route_src_t src);
 void ipv6_route_table_source_invalidated_reset(void);
 
+// ADDED YCN
+int ipv6_route_table_get_as_string(char* str, int len);
+
 #endif /* IPV6_ROUTING_TABLE_H_ */

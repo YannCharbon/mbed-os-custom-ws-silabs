@@ -2038,6 +2038,30 @@ void rpl_upward_print_instance(rpl_instance_t *instance, route_print_fn_t *print
     }
 }
 
+int rpl_upward_dodag_get_as_string(rpl_instance_t *instance, char *str, int len)
+{
+    rpl_dodag_t * dodag = ns_list_get_first(&instance->dodags);
+
+    int idx = 0;
+
+    ROUTE_PRINT_ADDR_STR_BUFFER_INIT(addr_str);
+    idx += sprintf(&str[idx], "dodag:%s;", ROUTE_PRINT_ADDR_STR_FORMAT(addr_str, dodag->id));
+
+    ns_list_foreach(rpl_dodag_version_t, version, &dodag->versions) {
+        ns_list_foreach(rpl_neighbour_t, neighbour, &instance->candidate_neighbours) {
+            if (neighbour->dodag_version == version) {
+                ROUTE_PRINT_ADDR_STR_BUFFER_INIT(addr_str_ll);
+                ROUTE_PRINT_ADDR_STR_BUFFER_INIT(addr_str_global);
+                idx += sprintf(&str[idx], "neigh:ll=%s gbl=%s;", 
+                                ROUTE_PRINT_ADDR_STR_FORMAT(addr_str_ll, neighbour->ll_address),
+                                ROUTE_PRINT_ADDR_STR_FORMAT(addr_str_global, neighbour->global_address));
+            }
+        }
+    }
+
+    return idx;
+}
+
 uint16_t rpl_upward_read_dao_target_list_size(const rpl_instance_t *instance, const uint8_t *target_prefix)
 {
 
